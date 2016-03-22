@@ -1,5 +1,6 @@
 .sass-cache
 .idea
+*.css
 store/packages/**
 site/**
 bin/update_site.sh
