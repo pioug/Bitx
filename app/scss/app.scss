@@ -387,17 +387,17 @@ dd li:hover,
 }
 
 /* Define animation to display achievement */
-@-webkit-keyframes achievementSlide {
+@keyframes achievementSlide {
   from { margin-left: 0;     }
   to   { margin-left: 520px; }
 }
 
 /* Style applied when a todo is checked */
 .achieved {
-  -webkit-animation-duration: .5s;
-  -webkit-animation-fill-mode: forwards;
-  -webkit-animation-name: achievementSlide;
-  -webkit-animation-timing-function: cubic-bezier(0.165, 0.840, 0.440, 1.000); /* easeOutQuart */
+  animation-duration: .5s;
+  animation-fill-mode: forwards;
+  animation-name: achievementSlide;
+  animation-timing-function: cubic-bezier(0.165, 0.840, 0.440, 1.000); /* easeOutQuart */
 }
 
 /* Style applied to the found string */

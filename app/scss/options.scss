@@ -82,8 +82,8 @@ footer {
   display: none;
 }
 .show {
-  -webkit-animation: slideDown 2.5s 0s 1 forwards;
-  -webkit-animation-timing-function: cubic-bezier(0.165, 0.840, 0.440, 1.000);
+  animation: slideDown 2.5s 0s 1 forwards;
+  animation-timing-function: cubic-bezier(0.165, 0.840, 0.440, 1.000);
   background: rgba(#232323,0.9);
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
@@ -97,7 +97,7 @@ footer {
   z-index: 10;
 }
 
-@-webkit-keyframes slideDown {
-  0%, 100% { -webkit-transform: translateY(-50px); }
-  10%, 90% { -webkit-transform: translateY(0px); }
+@keyframes slideDown {
+  0%, 100% { transform: translateY(-50px); }
+  10%, 90% { transform: translateY(0px); }
 }
