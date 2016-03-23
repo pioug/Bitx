@@ -1,3 +1,5 @@
+'use strict'
+
 var badge = {
 
   COLOR_WARNING: "#F54E4A",
@@ -88,3 +90,5 @@ var badge = {
     }
   }
 };
+
+module.exports = badge;

@@ -117,4 +117,6 @@
       delete window.localStorage.removeItem(this.key);
     }
   }
+
+  module.exports = window.oauth2;
 })();
