@@ -1,3 +1,5 @@
+'use strict'
+
 const browserify = require('browserify')
 const del = require('del')
 const gulp = require('gulp')
