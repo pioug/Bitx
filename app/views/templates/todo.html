@@ -1,4 +1,4 @@
-<li>
+<article>
   <span class="achievement"><p><img src="/img/icon-check.png">{{ congratulation }}</p></span>
   <span class="date"
         ng-class="{ 'overdues': category === 'overdues', 'icon-today': category === 'today', 'icon-coffee': category === 'noduedate' }"
@@ -34,4 +34,4 @@
     <p>{{ assignedTodo.comments_count }}</p>
   </span>
   <span class="icon-link" ng-click="openTodo(assignedTodo)" title="{{ 'visitTodo' | i18n }}"></span>
-</li>
+</article>

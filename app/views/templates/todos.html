@@ -4,11 +4,9 @@
         ng-show="(value | keywordSearch:search:userIDs:people | status: category).length !== 0"
         ng-bind-html="key | highlight:search | uppercase">
     </h2>
-    <ul>
-      <todo search="search"
-            category="{{ category }}"
-            ng-repeat="assignedTodo in (value | keywordSearch:search:userIDs:people | status:category | orderBy:'due_at')">
-      </todo>
-    </ul>
+    <todo search="search"
+          category="{{ category }}"
+          ng-repeat="assignedTodo in (value | keywordSearch:search:userIDs:people | status:category | orderBy:'due_at')">
+    </todo>
   </div>
 </dd>
