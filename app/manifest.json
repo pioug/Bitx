@@ -14,13 +14,13 @@
     "default_popup": "index.html"
   },
   "permissions": [
-    "tabs",
-    "storage",
+    "identity",
     "notifications",
+    "storage",
+    "tabs",
+    "http://dge9rmgqjs8m1.cloudfront.net/",
     "https://basecamp.com/",
-    "https://launchpad.37signals.com/",
-    "http://www.google.com/basecamp-crx",
-    "http://dge9rmgqjs8m1.cloudfront.net/"
+    "https://launchpad.37signals.com/"
   ],
   "web_accessible_resources": [
     "adapter.html",
@@ -29,13 +29,6 @@
     "js/*",
     "lib/*",
     "views/*"
-  ],
-  "content_scripts": [
-    {
-      "matches": ["http://www.google.com/basecamp-crx*"],
-      "js": ["js/injection.js"],
-      "run_at": "document_start"
-    }
   ],
   "background": {
     "scripts": ["background.js"]
