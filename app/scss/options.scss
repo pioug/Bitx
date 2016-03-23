@@ -5,6 +5,10 @@ $color-blue: #5e9bca;
 
 $fonts_en: "Droid Sans", arial, helvetica, clean, sans-serif;
 
+* {
+  margin: 0;
+}
+
 a {
   text-decoration: none;
   color: $color-blue;
