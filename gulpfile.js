@@ -21,18 +21,32 @@ gulp.task('scripts:background', () =>
   .pipe(gulp.dest('build'))
 )
 
-gulp.task('assets', () =>
+gulp.task('scripts:options', () => {
+  browserify({
+    entries: 'app/options.js',
+  })
+  .bundle()
+  .pipe(source('options.js'))
+  .pipe(gulp.dest('build'))
+})
+
+gulp.task('assets', () => {
   gulp.src([
     '!app/scss/**/*',
     '!app/js/badge.js',
     'app/**'
   ])
   .pipe(gulp.dest('build'))
-)
+})
 
-gulp.task('build', ['assets', 'scripts:background', 'styles'])
+gulp.task('build', [
+  'assets',
+  'scripts:background',
+  'scripts:options',
+  'styles'
+])
 
-gulp.task('clean', () => del('build'));
+gulp.task('clean', () => del('build'))
 
 gulp.task('default', () =>
   gulp.watch('app/**/*', ['build'])

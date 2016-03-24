@@ -1,3 +1,5 @@
+const badge = require('./js/badge.js')
+
 var options = {
 
   save_options: function () {
@@ -58,3 +60,5 @@ window.onload = function () {
   document.getElementById('language').addEventListener('change', options.save_options);
   document.getElementById('logout').addEventListener('click', options.logout);
 };
+
+module.exports = options

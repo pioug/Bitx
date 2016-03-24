@@ -1,5 +1,7 @@
 'use strict'
 
+const _ = require('lodash')
+
 var badge = {
 
   COLOR_WARNING: "#F54E4A",
@@ -25,17 +27,17 @@ var badge = {
     var today = this.dateToYMD(new Date());
     switch (status) {
       case 'no_due_date':
-        return _.where(input, { due_at: null }).length;
+        return _.filter(input, { due_at: null }).length;
       case 'today':
-        return _.where(input, { due_at: today }).length;
+        return _.filter(input, { due_at: today }).length;
       case 'upcoming':
-        return _.countBy(input, function(todo) {
+        return _.filter(input, function(todo) {
           return todo.due_at > today;
-        }).true;
+        }).length;
       case 'overdues':
-        return _.countBy(input, function(todo) {
+        return _.filter(input, function(todo) {
           return todo.due_at ? todo.due_at < today : false;
-        }).true;
+        }).length;
     }
   },
 
