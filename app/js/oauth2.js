@@ -3,24 +3,6 @@
 const queryString = require('query-string')
 const moment = require('moment')
 
-const chromeAuthorize = (authorizationUrl) => {
-  let p = new Promise((resolve, reject) => {
-    chrome.identity.launchWebAuthFlow({
-      url: authorizationUrl,
-      interactive: true
-    }, (url) => {
-      if (!url) return reject()
-      let a = document.createElement('a'),
-        params
-      a.href = url
-      params = queryString.parse(a.hash)
-      resolve(params)
-    })
-  })
-
-  return p
-}
-
 const oAuth2 = {
   baseAccessTokenUrl: 'https://launchpad.37signals.com/authorization/token',
   baseAuthorizationUrl: 'https://launchpad.37signals.com/authorization/new',
@@ -29,17 +11,31 @@ const oAuth2 = {
   redirectUri: 'https://pbdnaokipicebiobfmkeaenibfjkocnb.chromiumapp.org/provider_cb'
 }
 
-oAuth2.authorize = () => {
-  return chromeAuthorize(`${oAuth2.baseAuthorizationUrl}?type=user_agent&client_id=${oAuth2.clientId}&redirect_uri=${oAuth2.redirectUri}`)
+const chromeAuthorize = authorizationUrl =>
+  new Promise((resolve, reject) =>
+    chrome.identity.launchWebAuthFlow({
+      url: authorizationUrl,
+      interactive: true
+    }, url => {
+      if (!url) return reject()
+      let a = document.createElement('a'),
+        params
+      a.href = url
+      params = queryString.parse(a.hash)
+      resolve(params)
+    })
+  )
+
+const authorize = () =>
+  chromeAuthorize(`${oAuth2.baseAuthorizationUrl}?type=user_agent&client_id=${oAuth2.clientId}&redirect_uri=${oAuth2.redirectUri}`)
     .then((params) => {
       localStorage.basecampToken = params.access_token
       localStorage.basecampRefreshToken = params.refresh_token
       localStorage.expiresAt = moment().add(params.expires_in, 'seconds').format()
       chrome.tabs.create({ url:'./views/auth-success.html' })
     })
-}
 
-oAuth2.renew = () => {
+const renew = () => {
   let form = new FormData()
   form.append('client_id', oAuth2.clientId)
   form.append('client_secret', oAuth2.clientSecret)
@@ -50,14 +46,14 @@ oAuth2.renew = () => {
       method: 'post',
       body: form
     })
-    .then((response) => response.json())
-    .then((json) => {
+    .then(response => response.json())
+    .then(json => {
       localStorage.basecampToken = json.access_token
       localStorage.expiresAt = moment().add(json.expires_in, 'seconds').format()
     })
 }
 
-// @TODO
-oAuth2.authorize()
-
-module.exports = oAuth2
+module.exports = {
+  authorize,
+  renew
+}
