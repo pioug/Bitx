@@ -14,7 +14,7 @@ var options = {
 
     chrome.storage.local.get('myTodos', function(data) {
       if (chrome.runtime.lastError) return;
-      badge.updateBadge(data.myTodos);
+      badge.update(data.myTodos, localStorage.counter_todos);
     });
     var elm = document.getElementById('alert');
     var newOne = elm.cloneNode(true);

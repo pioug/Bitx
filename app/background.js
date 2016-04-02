@@ -66,7 +66,7 @@ const mainTask = () =>
       cache('allTodos', allTodos)
       cache('myTodos', myTodos)
 
-      badge.updateBadge(myTodos)
+      badge.update(myTodos, localStorage.counter_todos)
     })
 
 const setEnvironment = () => {
