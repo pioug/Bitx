@@ -7,6 +7,10 @@ const badge = require('./js/badge.js')
 const oauth2 = require('./js/oauth2.js')
 const bcxAPI = require('./js/bcx-api.js')
 
+const state = {
+  polling: null
+}
+
 const insertProject = (project, todos) =>
   _.map(todos, todo => _.assign({}, todo, { project: project }))
 
@@ -92,7 +96,7 @@ const setEnvironment = () => {
 }
 
 const poll = () =>
-  setTimeout(() => mainTask().then(poll), localStorage.refresh_period)
+  state.polling = setTimeout(() => mainTask().then(poll), localStorage.refresh_period)
 
 const notifyUpdate = () => {
   let notificationId = new Date().getTime().toString();
@@ -109,9 +113,17 @@ const notifyUpdate = () => {
   })
 }
 
-const oauth2Process = localStorage.basecampToken ? oauth2.renew : oauth2.authorize
+const start = () => {
+  let oauth2Process = localStorage.basecampToken ? oauth2.renew : oauth2.authorize
+  setEnvironment()
+  oauth2Process()
+    .then(mainTask)
+    .then(poll)
+}
 
-setEnvironment()
-oauth2Process()
-  .then(mainTask)
-  .then(poll)
+const stop = () => clearTimeout(state.polling)
+
+window.addEventListener('online',  start)
+window.addEventListener('offline', stop);
+
+start()

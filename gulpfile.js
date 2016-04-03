@@ -14,7 +14,8 @@ gulp.task('styles', () =>
 
 gulp.task('scripts:background', () =>
   browserify({
-    entries: 'app/background.js',
+    debug: true,
+    entries: 'app/background.js'
   })
   .bundle()
   .pipe(source('background.js'))
@@ -23,7 +24,8 @@ gulp.task('scripts:background', () =>
 
 gulp.task('scripts:options', () => {
   browserify({
-    entries: 'app/options.js',
+    debug: true,
+    entries: 'app/options.js'
   })
   .bundle()
   .pipe(source('options.js'))
