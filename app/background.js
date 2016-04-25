@@ -30,15 +30,14 @@ const getMyTodos = (me, projects, todosByProject) =>
     .flatten()
     .value()
 
-const cache = (key, value) =>
-  new Promise((resolve, reject) => {
-    let object = {}
-    object[key] = value
-    chrome.storage.local.set(object, () => {
+const cache = object =>
+  new Promise((resolve, reject) =>
+    // Chrome Storage does not always return nested object without parse(stringify)
+    chrome.storage.local.set(JSON.parse(JSON.stringify(object)), () => {
       if (chrome.runtime.lastError) return reject(chrome.runtime.lastError)
       resolve()
-    });
-  })
+    })
+  )
 
 const mainTask = () =>
   bcxAPI.getAuthorization(localStorage.basecampToken)
@@ -64,11 +63,13 @@ const mainTask = () =>
       let allTodos = getAllTodos(projects, todos)
       let myTodos = getMyTodos(me, projects, todos)
 
-      cache('me', _.flatten(me))
-      cache('people', _.flatten(people))
-      cache('projects', projects)
-      cache('allTodos', allTodos)
-      cache('myTodos', myTodos)
+      cache({
+        me: _.flatten(me),
+        people:  _.flatten(people),
+        projects,
+        allTodos,
+        myTodos
+      })
 
       badge.update(myTodos, localStorage.counter_todos)
     })

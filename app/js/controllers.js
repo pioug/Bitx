@@ -1,128 +1,85 @@
-'use strict';
+'use strict'
 
-angular
-.module('basecampExtension.controllers', [])
+const angular = require('angular')
+const bcxAPI = require('./bcx-api.js')
 
-/**
- * Controller linked to todos.html
- */
-.controller('TodosController', function($scope, $filter, Cache) {
+const MainController = ($animate, $element, $scope, State) => {
 
-  /**
-   * Group todos by project name
-   * NOTE: Assume that project names are unique otherwise todos will be grouped
-   * under the same project
-   */
-  $scope.groupByProject = function() {
-    console.log('LOG: groupByProject');
-    $scope.$apply(function() {
-      $scope.projects = _.groupBy($scope.allTodos, function(todo) {
-        return todo.project;
-      });
-    });
-  };
+  const setHeight = element => {
+    let inner = element[0].querySelector('.content')
+    if (inner) element[0].style.height = Math.min(inner.clientHeight, 306) + 'px'
+  }
+
+  $scope.state = State
 
   /**
-   * Custom sort function to compare date in string format as integer
+   * Open options page in a new tab
    */
-  $scope.sortByDate = function(assignedTodo) {
-    if (assignedTodo.due_at !== null) return assignedTodo.due_at.replace(/-/g, '');
-    else return '99999999'; // Default value for undefined due date
-  };
+  $scope.openOptions = () => {
+    chrome.tabs.create({ url: 'options.html' })
+    console.log('LOG: openOptions')
+  }
 
   /**
    * Return the number of todos of one category
    * @param  {string}  category  Name of the category.
    */
-  $scope.getNumberTodos = function(category) {
-    var status = $filter('status');
-    var keywordSearch = $filter('keywordSearch');
-    return _.size(keywordSearch(status($scope.allTodos, category), $scope.search, $scope.userIDs, $scope.people));
-  };
+  $scope.getNumberTodos = category =>
+    _.chain(State.todos[category])
+      .values()
+      .flatten()
+      .size()
+      .value()
 
-  /**
-   * Initialization of variables
-   */
-  Cache.load($scope);
-})
+  $scope.getHeight = category => {
+    let todos = State.todos[category]
+    if (category !== State.display) return 0
+    return Math.min((_.size(todos) + _.chain(todos).values().flatten().size().value()) * 51, 306) + 'px'
+  }
 
-/**
- * Controller linked to all views
- */
-.controller('MainController', function($scope, Language) {
+  $animate.enabled(false)
+  setTimeout(() => $animate.enabled(true), 100)
+}
 
-  /**
-   * Open options page in a new tab
-   */
-  $scope.openOptions = function() {
-    chrome.tabs.create({ url: 'options.html' });
-    console.log('LOG: openOptions');
-  };
-
-  $scope.startOauth = function() {
-    window.oauth2.start();
-  };
-
-  /**
-   * Initialization
-   */
-  $scope.lang   = Language;
-  $scope.online = localStorage.basecampToken ? true : false;
-})
-
-/**
- * Controller linked to todo directive
- */
-.controller('todoCtrl', function($scope, $element, $filter, $http) {
-  $scope.$watch('search', function() {
-    localStorage.lastSearch = $scope.search;
-    $scope.realSearch = $scope.search ? $scope.search.replace(/(from:|to:)\w+\s+/gi, '') : '';
-  });
+const TodoCtrl = ($scope, $filter, $timeout, State) => {
+  $scope.congratulation = $filter('i18n')('achievement' + Math.floor((Math.random() * 3) + 1))
 
   /**
    * Open tab to view todo on basecamp.com
    * @param  {object}  todo
    */
-  $scope.openTodo = function(todo) {
-    chrome.tabs.create({ url: todo.url.replace(/[\/]api[\/]v1|[\.]json/gi, '') });
-    console.log('LOG: openTodo ID ' + todo.id);
-  };
+  $scope.openTodo = todo => {
+    chrome.tabs.create({ url: todo.url.replace(/[\/]api[\/]v1|[\.]json/gi, '') })
+    console.log('LOG: openTodo ID ' + todo.id)
+  }
 
   /**
    * Check a todo
    * @param {object} todo
    */
-  $scope.completeTodo = function(todo) {
-    var allTodos = $scope.$parent.$parent.$parent.allTodos,
-        random   = Math.floor((Math.random() * 3) + 1);
-    allTodos.splice(_.indexOf(allTodos, todo), 1);
-    $http({
-      method: 'PUT',
-      url: todo.url,
-      data: { completed: true },
-      headers: { 'Authorization': 'Bearer ' + localStorage.basecampToken }
-    })
-    .success(function(data, status, headers, config) {
-      chrome.storage.local.set({ 'allTodos': angular.fromJson(angular.toJson(allTodos)) });
-      localStorage.lastTodoCompleted = JSON.stringify(todo);
-    })
-    .error(function(data, status, headers, config) {
-      console.log('ERROR: completeTodo request failed');
-    });
-    $element.addClass('achieved');
-    $($element).delay(500).slideUp();
-    if ($element.parent().children().length === $($element).parent().children('.achieved').length) {
-      $($element).parent().prev().delay(1000).slideUp();
-    }
-    $scope.congratulation = $filter('i18n')('achievement' + random);
-    console.log('LOG: completeTodo ID ' + todo.id);
-  };
+  $scope.completeTodo = todo => {
+
+    bcxAPI.completeTodo(localStorage.basecampToken, todo)
+      .then((data, status, headers, config) => {
+        console.log('LOG: completeTodo ID ' + todo.id)
+        // chrome.storage.local.set({ 'allTodos': angular.fromJson(angular.toJson(allTodos)) })
+      })
+      .catch((data, status, headers, config) => {
+        console.log('ERROR: completeTodo request failed')
+      })
+
+    $scope.achieved = true
+    $timeout(() => _.remove(State.todos[$scope.category][$scope.key], todo), 500)
+  }
 
   /**
    * Return true if keyword 'from:' is used
    * Allow to add tooltip 'Assigned to someone' in todos.html view
    */
-  $scope.isFiltered = function() {
-    return new RegExp('from:', 'gi').test($scope.search);
-  };
-});
+  $scope.isFiltered = () => new RegExp('from:', 'gi').test($scope.search)
+}
+
+module.exports = angular
+  .module('basecampExtension.controllers', [])
+  .controller('MainController', MainController)
+  .controller('TodoCtrl', TodoCtrl)

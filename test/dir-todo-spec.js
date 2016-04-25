@@ -40,7 +40,7 @@ describe('todo', function() {
         "project": "Basecamp Chrome Extension - Bitx",
         "project_id": 2155413
       };
-    ctrl = $controller('todoCtrl', {
+    ctrl = $controller('TodoCtrl', {
       $scope: scope,
       $element: element,
     });

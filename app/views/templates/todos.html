@@ -1,12 +1,8 @@
-<dd nicescroll="{ scrollstep: 50 }">
-  <div class="content" ng-repeat="(key, value) in projects">
-    <h2 class="project"
-        ng-show="(value | keywordSearch:search:userIDs:people | status: category).length !== 0"
-        ng-bind-html="key | highlight:search | uppercase">
-    </h2>
-    <todo search="search"
-          category="{{ category }}"
-          ng-repeat="assignedTodo in (value | keywordSearch:search:userIDs:people | status:category | orderBy:'due_at')">
-    </todo>
+<dd ng-style="{ height: getHeight(category) }">
+  <div class="content">
+    <div ng-repeat="(key, value) in state.todos[category]">
+      <h2 class="project slide-up" ng-bind-html="key" ng-if="value.length"></h2>
+      <todo class="slide-up" ng-repeat="assignedTodo in value track by assignedTodo.id"></todo>
+    </div>
   </div>
 </dd>

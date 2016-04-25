@@ -1,6 +1,13 @@
 'use strict';
 
-const getOptions = token => ({ headers: { Authorization: `Bearer ${token}` } })
+const _ = require('lodash')
+
+const getOptions = token => ({
+  headers: {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+})
 
 const getAuthorization = token =>
   fetch('https://launchpad.37signals.com/authorization.json', getOptions(token))
@@ -22,10 +29,18 @@ const getPeople = (token, account) =>
   fetch(`https://basecamp.com/${account.id}/api/v1/people.json`, getOptions(token))
     .then(res => res.json())
 
+const completeTodo = (token, todo) =>
+  fetch(todo.url, _.merge({
+    method: 'put',
+    body: JSON.stringify({ completed: true })
+  }, getOptions(token)))
+    .then(res => res.json())
+
 module.exports = {
   getAuthorization,
   getMe,
   getPeople,
   getProjects,
-  getRemainingTodos
+  getRemainingTodos,
+  completeTodo
 }

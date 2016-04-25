@@ -1,61 +1,40 @@
 <!doctype html>
-<html lang="en" ng-app="basecampExtension" ng-csp>
+<html lang="en" ng-app="basecampExtension" ng-csp ng-strict-di>
 <head>
   <meta charset="utf-8">
   <title>Bitx</title>
   <link href="css/app.css" rel="stylesheet" media="screen">
+  <link href="css/style.css" rel="stylesheet" media="screen">
+  <script src="app.js"></script>
 </head>
 
 <body ng-controller="MainController" class="{{lang}}">
-  <div ng-switch="online">
-    <span ng-switch-when="true" ng-controller="TodosController">
-      <header>
-        <a href="http://goo.gl/fUXs2M" target="_blank" title="{{'rate_bitx' | i18n}}">
-          <img src="/img/logo-header.png" height="26" width="39" alt="Bitx logo">
-        </a>
-        <search-suggestions data="people" search="search"></search-suggestions>
-        <a ng-click="openOptions()"><span class="icon-settings"></span></a>
-      </header>
-      <section>
-        <toggle-content category="overdues" todos-counter="{{getNumberTodos('overdues')}}"></toggle-content>
-        <todos category="overdues"  projects="projects" search="search" userids="userIDs" people="people"></todos>
-        <toggle-content category="today" todos-counter="{{getNumberTodos('today')}}"></toggle-content>
-        <todos category="today"     projects="projects" search="search" userids="userIDs" people="people"></todos>
-        <toggle-content category="upcoming" todos-counter="{{getNumberTodos('upcoming')}}"></toggle-content>
-        <todos category="upcoming"  projects="projects" search="search" userids="userIDs" people="people"></todos>
-        <toggle-content category="noduedate" todos-counter="{{getNumberTodos('noduedate')}}"></toggle-content>
-        <todos category="noduedate" projects="projects" search="search" userids="userIDs" people="people"></todos>
-      </section>
-    </span>
+  <main ng-if="state.logged">
+    <header>
+      <a href="http://goo.gl/fUXs2M" target="_blank" title="{{'rate_bitx' | i18n}}" tabindex="-1">
+        <img src="/img/bitx-logo.svg" height="26" width="39" alt="Bitx logo">
+      </a>
+      <search-suggestions></search-suggestions>
+      <a ng-click="openOptions()"><span class="icon-settings"></span></a>
+    </header>
+    <section>
+      <toggle-content category="overdues"></toggle-content>
+      <todos category="overdues"></todos>
 
-    <span class="allow-access" ng-switch-when="false" ng-click="startOauth()">
-      <img src="/img/logo-header.png" height="26" width="39">
-      <p>{{'needAuth1' | i18n}} <em>"Yes, I'll allow access"</em> {{'needAuth2' | i18n}}</p>
-    </span>
-  </div>
+      <toggle-content category="today"></toggle-content>
+      <todos category="today"></todos>
 
-  <script src="lib/angular.min.js"></script>
-  <script src="lib/angular-sanitize.min.js"></script>
-  <script src="lib/angular-ui-utils.min.js"></script>
-  <script src="lib/underscore-min.js"></script>
-  <script src="lib/jquery-2.1.0.min.js"></script>
-  <script src="lib/jquery-ui-1.10.2.custom.min.js"></script>
-  <script src="lib/jquery.nicescroll.min.js"></script>
+      <toggle-content category="upcoming"></toggle-content>
+      <todos category="upcoming"></todos>
 
-  <script src="js/oauth2.js"></script>
+      <toggle-content category="noduedate"></toggle-content>
+      <todos category="noduedate"></todos>
+    </section>
+  </main>
 
-  <script src="js/controllers.js"></script>
-  <script src="js/directives.js"></script>
-  <script src="js/filters.js"></script>
-  <script src="js/services.js"></script>
-  <script src="js/app.js"></script>
-
-  <script src="js/lang/en.js"></script>
-  <script src="js/lang/fr.js"></script>
-  <script src="js/lang/ko.js"></script>
-  <script src="js/lang/it.js"></script>
-  <script src="js/lang/ja.js"></script>
-  <script src="js/lang/pt.js"></script>
-
+  <main class="allow-access" ng-if="!state.logged" ng-click="startOauth()">
+    <img src="/img/logo-header.png" height="26" width="39">
+    <p>{{'needAuth1' | i18n}} <em>"Yes, I'll allow access"</em> {{'needAuth2' | i18n}}</p>
+  </main>
 </body>
 </html>

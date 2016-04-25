@@ -1,7 +1,10 @@
-<dt ng-class="{ enabled: todosCounter !== '0' }">
-  <h1>{{ header }}</h1>
+<dt
+  ng-disabled="!counter"
+  ng-class="{ active: state.display === category }"
+  ng-click="toggle(category)">
+  <h1>{{ ::header }}</h1>
   <span class="count-todos"
-        title="{{ todosCounter }} {{ tooltip }}"
-        ng-show="todosCounter">{{ todosCounter }}
+    title="{{ counter }} {{ ::tooltip }}"
+    ng-show="counter">{{ counter }}
   </span>
 </dt>

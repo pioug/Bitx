@@ -7,22 +7,31 @@ const COLOR_WARNING = '#F54E4A'
 const COLOR_OK = '#5E9AC9'
 
 /**
+ * Filtering Todos by deadline
+ * Dates are ISO 8601, so they can be easily sorted chronologically as string
+ * See: http://en.wikipedia.org/wiki/Lexicographical_order
+ */
+const getTodosByDeadline = (todos, status) => {
+  let today = moment().format('YYYY-MM-DD')
+  switch (status) {
+    case 'noduedate':
+      return _.filter(todos, { due_at: null })
+    case 'today':
+      return _.filter(todos, { due_at: today })
+    case 'upcoming':
+      return _.filter(todos, todo => todo.due_at && todo.due_at > today)
+    case 'overdues':
+      return _.filter(todos, todo => todo.due_at && todo.due_at < today)
+  }
+}
+
+/**
  * Count Todos in one category
  * @param {string} input JSON string containing all myTodos
  * @param {string} status Count overdue, today, upcoming or undefined Todos
  */
 const countTodos = (todos, status) => {
-  let today = moment().format('YYYY-MM-DD')
-  switch (status) {
-    case 'no_due_date':
-      return _.filter(todos, { due_at: null }).length
-    case 'today':
-      return _.filter(todos, { due_at: today }).length
-    case 'upcoming':
-      return _.filter(todos, todo => todo.due_at > today).length
-    case 'overdues':
-      return _.filter(todos, todo => todo.due_at ? todo.due_at < today : false).length
-  }
+  return getTodosByDeadline(todos, status).length
 }
 
 /**
@@ -46,7 +55,7 @@ const update = (todos, counter) => {
       counter =
         countTodos(todos, 'today') ||
         countTodos(todos, 'upcoming') ||
-        countTodos(todos, 'no_due_date') ||
+        countTodos(todos, 'noduedate') ||
         ''
     }
 
@@ -62,5 +71,6 @@ const update = (todos, counter) => {
 }
 
 module.exports = {
+  getTodosByDeadline,
   update
 }

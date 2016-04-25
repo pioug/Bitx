@@ -1,6 +1,7 @@
 'use strict'
 
 const browserify = require('browserify')
+const ngAnnotate = require('browserify-ngannotate')
 const del = require('del')
 const gulp = require('gulp')
 const sass = require('gulp-sass')
@@ -32,17 +33,31 @@ gulp.task('scripts:options', () => {
   .pipe(gulp.dest('build'))
 })
 
+gulp.task('scripts:app', () => {
+  browserify({
+    debug: true,
+    entries: 'app/js/app.js',
+  })
+  .transform('browserify-ngannotate', {
+    sourcemap: false
+  })
+  .bundle()
+  .pipe(source('app.js'))
+  .pipe(gulp.dest('build'))
+})
+
 gulp.task('assets', () => {
   gulp.src([
     '!app/scss/**/*',
-    '!app/js/badge.js',
-    'app/**'
+    '!app/js/**/*.js',
+    'app/**/*'
   ])
   .pipe(gulp.dest('build'))
 })
 
 gulp.task('build', [
   'assets',
+  'scripts:app',
   'scripts:background',
   'scripts:options',
   'styles'
@@ -50,6 +65,7 @@ gulp.task('build', [
 
 gulp.task('clean', () => del('build'))
 
-gulp.task('default', () =>
+gulp.task('default', () => {
+  gulp.start('build')
   gulp.watch('app/**/*', ['build'])
-)
+})
